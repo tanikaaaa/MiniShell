@@ -19,7 +19,6 @@
 #define HISTORY_LIMIT 100
 
 char PWD[1024];
-char PATH[1024];
 char * history[HISTORY_LIMIT];
 int history_count = 0;
 
@@ -164,7 +163,7 @@ int start_process(char ** args){
 
         if (pid == 0){  // It's the child process
 		
-		// execvp searches PATH and replaces the child process image
+		// execvp locates the command and replaces the child process image
 		if (execvp(args[0], args) == -1){
 			perror("msh");
 	}
@@ -427,13 +426,19 @@ int shell_execute(char ** args){
 void shell_loop(void){
 
 	int status = shell_help(NULL);
+	char cwd[1024];
 
         char * command_line;
         char ** arguments;
 	status = 1;
 
         while (status){
-                printf("msh> ");
+		if (getcwd(cwd, sizeof(cwd)) != NULL){
+			printf("msh:%s$ ", cwd);
+		}
+		else{
+			printf("msh$ ");
+		}
                 command_line = read_command_line();
 		if ( strcmp(command_line, "") == 0 ){
 			free(command_line);
@@ -455,8 +460,6 @@ int main(int argc, char ** argv){
 	(void)argc;
 	(void)argv;
 	getcwd(PWD, sizeof(PWD));
-	strcpy(PATH, PWD);
-	strcat(PATH, "/cmds/");
 
         shell_loop();
 		
