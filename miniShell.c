@@ -188,6 +188,7 @@ char * read_command_line(void){
                 position++;
                 c = getchar();
         }
+		command[position] = '\0';
         return command;
 }
 
@@ -210,14 +211,9 @@ int start_process(char ** args){
         if (pid == 0){  // It's the child process
 		
 		// Find the path of the command
-		char cmd_dir[1024];
-		strcpy(cmd_dir, PATH);
-		strcat(cmd_dir, args[0]);
-		
-		// Execute the required process		
-		if ( execv( cmd_dir, args ) == -1){ // Error
-			perror("minsh");
-		}
+		if (execvp(args[0], args) == -1){
+			perror("msh");
+	}
 
 		exit(EXIT_FAILURE);	// To exit from child process
         }
@@ -405,7 +401,7 @@ void shell_loop(void){
 	status = 1;
 
         while (status){
-                printf("minsh> ");
+                printf("msh> ");
                 command_line = read_command_line();
 		if ( strcmp(command_line, "") == 0 ){
 			continue;
@@ -426,6 +422,6 @@ int main(int argc, char ** argv){
 
         // Main loop of the shell
         shell_loop();
-
+		
         return 0;
 }
