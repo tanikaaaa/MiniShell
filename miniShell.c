@@ -15,12 +15,25 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 
-#define BUILTIN_COMMANDS 5
+#define BUILTIN_COMMANDS 6
+#define HISTORY_LIMIT 100
 
 char PWD[1024];
 char PATH[1024];
+char * history[HISTORY_LIMIT];
+int history_count = 0;
 
-char * builtin[] = {"cd", "exit", "help", "pwd", "echo"};
+char * builtin[] = {"cd", "exit", "help", "pwd", "echo", "history"};
+
+void add_history(char * command){
+	if (history_count < HISTORY_LIMIT){
+		history[history_count] = malloc(strlen(command) + 1);
+		if (history[history_count] != NULL){
+			strcpy(history[history_count], command);
+			history_count++;
+		}
+	}
+}
 
 int shell_cd(char ** args){
 	if (args[1] == NULL){
@@ -45,6 +58,7 @@ int shell_help(char ** args){
 	printf("\n\t- cd dir");
 	printf("\n\t- pwd");
 	printf("\n\t- echo [string to echo]");
+	printf("\n\t- history");
 	printf("\n\t- clear");
 	printf("\n\t- ls [-ail] [dir1 dir2 ...]");
 	printf("\n\t- cp source target (or) cp file1 [file2 ...] dir");
@@ -80,12 +94,21 @@ int shell_echo(char ** args){
 	return 1;
 }
 
+int shell_history(char ** args){
+	int i;
+	for (i = 0 ; i < history_count ; i++){
+		printf("%d %s\n", i + 1, history[i]);
+	}
+	return 1;
+}
+
 int (* builtin_function[]) (char **) = {
 	&shell_cd,
 	&shell_exit,
 	&shell_help,
 	&shell_pwd,
-	&shell_echo
+	&shell_echo,
+	&shell_history
 };
 
 
@@ -317,11 +340,19 @@ void shell_loop(void){
                 printf("msh> ");
                 command_line = read_command_line();
 		if ( strcmp(command_line, "") == 0 ){
+			free(command_line);
 			continue;
 		}
+		add_history(command_line);
                 arguments = split_command_line(command_line);
                 status = shell_execute(arguments);
+		free(arguments);
+		free(command_line);
         }
+
+	for (int i = 0 ; i < history_count ; i++){
+		free(history[i]);
+	}
 }
 
 int main(int argc, char ** argv){
