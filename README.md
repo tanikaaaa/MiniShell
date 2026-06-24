@@ -8,13 +8,35 @@ The project is designed to demonstrate core operating system concepts through a 
 
 ## Features
 
-- Built-in commands: `cd`, `pwd`, `echo`, `help`, `exit`, and `history`
-- External command execution using the system `PATH`
-- Session-only command history
-- Input redirection with `<`
-- Output redirection with `>` and `>>`
-- Error redirection with `2>` and `2>>`
-- Makefile-based build process
+* Built-in commands:
+
+  * `cd`
+  * `pwd`
+  * `echo`
+  * `help`
+  * `exit`
+  * `history`
+* Execute external system commands using POSIX process management.
+* Command execution using:
+
+  * `fork()`
+  * `execvp()`
+  * `waitpid()`
+* Input, output, and error redirection:
+
+  * `<`
+  * `>`
+  * `>>`
+  * `2>`
+  * `2>>`
+* Single pipe support:
+
+  * `command1 | command2`
+* Session-based command history.
+* Command parsing using tokenization.
+* Build automation using Makefile.
+* Clean compilation with zero warnings using:
+  `gcc -Wall -Wextra`
 
 ## OS Concepts Used
 
@@ -54,6 +76,7 @@ cd ..
 ls
 ls > output.txt
 cat < input.txt
+ls | grep txt
 ls missing-file 2> error.txt
 history
 exit
@@ -62,14 +85,10 @@ exit
 ## Current Limitations
 
 - Command history is stored only for the current session.
-- Pipes are not supported.
-- Background jobs are not supported.
 - Advanced shell features such as `!!`, `!n`, aliases, and shell variables are not supported.
 - Quoted string parsing is limited.
 
 ## Future Improvements
 
-- Add pipe support between commands.
 - Improve command parsing for quoted strings and escaped characters.
 - Add optional persistent history.
-- Add support for background processes.
