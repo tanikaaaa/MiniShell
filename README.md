@@ -1,4 +1,4 @@
-# MiniShell
+# 🐚 MiniShell
 
 A lightweight Unix-like shell built in **C** using **POSIX system calls**, designed to demonstrate core Operating System concepts such as process creation, command execution, inter-process communication, file descriptor management, and command parsing.
 
@@ -6,9 +6,9 @@ MiniShell supports built-in commands, external command execution, I/O redirectio
 
 ---
 
-## Features
+## ✨ Features
 
-### Built-in Commands
+### 🔹 Built-in Commands
 
 - `cd` – Change the current working directory
 - `pwd` – Print the current working directory
@@ -17,7 +17,7 @@ MiniShell supports built-in commands, external command execution, I/O redirectio
 - `help` – Display available commands
 - `exit` – Terminate the shell
 
-### External Command Execution
+### ⚙️ External Command Execution
 
 Execute Linux/macOS system commands using POSIX process management:
 
@@ -25,7 +25,7 @@ Execute Linux/macOS system commands using POSIX process management:
 - `execvp()`
 - `waitpid()`
 
-### Input / Output Redirection
+### 📂 Input / Output Redirection
 
 Supports:
 
@@ -45,7 +45,7 @@ cat < input.txt
 ls missing-file 2> error.txt
 ```
 
-### Inter-Process Communication
+### 🔗 Inter-Process Communication
 
 Supports single-pipe execution:
 
@@ -59,12 +59,12 @@ Example:
 ls | grep txt
 ```
 
-### Command History
+### 📝 Command History
 
 - Stores commands executed during the current shell session
 - Accessible using the `history` command
 
-### Additional Highlights
+### 🚀 Additional Highlights
 
 - Token-based command parsing
 - Built-in command dispatching
@@ -79,7 +79,7 @@ gcc -Wall -Wextra
 
 ---
 
-## Operating System Concepts Demonstrated
+## 🧠 Operating System Concepts Demonstrated
 
 | Concept | Implementation |
 |----------|---------------|
@@ -94,7 +94,7 @@ gcc -Wall -Wextra
 
 ---
 
-## Project Structure
+## 📁 Project Structure
 
 ```text
 MiniShell/
@@ -106,7 +106,7 @@ MiniShell/
 
 ---
 
-## Build and Run
+## 🛠️ Build and Run
 
 Compile MiniShell:
 
@@ -128,7 +128,7 @@ make clean
 
 ---
 
-## Example Commands
+## 💻 Example Commands
 
 ```sh
 pwd
@@ -145,7 +145,7 @@ exit
 
 ---
 
-## Sample Session
+## 📸 Sample Session
 
 ```text
 MiniShell> pwd
@@ -165,7 +165,7 @@ MiniShell> history
 
 ---
 
-## Current Limitations
+## ⚠️ Current Limitations
 
 - Command history is stored only for the current session
 - Supports only a single pipe (`|`)
@@ -175,7 +175,7 @@ MiniShell> history
 
 ---
 
-## Future Improvements
+## 🔮 Future Improvements
 
 - Persistent command history
 - Multi-stage pipelines (`cmd1 | cmd2 | cmd3`)
@@ -186,7 +186,7 @@ MiniShell> history
 
 ---
 
-## Learning Outcomes
+## 🎯 Learning Outcomes
 
 Through this project, the following concepts were explored and implemented:
 
@@ -200,7 +200,7 @@ Through this project, the following concepts were explored and implemented:
 
 ---
 
-## Tech Stack
+## 🧰 Tech Stack
 
 - **Language:** C
 - **Core Concepts:** Operating Systems, UNIX Internals, POSIX System Calls
