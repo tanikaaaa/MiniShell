@@ -47,10 +47,12 @@ int shell_cd(char ** args){
 }
 
 int shell_exit(char ** args){
+	(void)args;
 	return 0;
 }
 
 int shell_help(char ** args){
+	(void)args;
 	printf("\nMiniShell - A Unix-like shell written in C.\n");
 	printf("\nCommands implemented: ");
 	printf("\n\t- help");
@@ -77,6 +79,7 @@ int shell_help(char ** args){
 }
 
 int shell_pwd(char ** args){
+	(void)args;
 	printf("%s\n", PWD);
 	return 1;
 }
@@ -95,6 +98,7 @@ int shell_echo(char ** args){
 }
 
 int shell_history(char ** args){
+	(void)args;
 	int i;
 	for (i = 0 ; i < history_count ; i++){
 		printf("%d %s\n", i + 1, history[i]);
@@ -154,7 +158,7 @@ char * read_command_line(void){
 int start_process(char ** args){
 
         int status;
-        pid_t pid, wpid;
+        pid_t pid;
 
         pid = fork();
 
@@ -173,17 +177,109 @@ int start_process(char ** args){
         else{           // It's the parent process
                 do{
                         // Wait until the child exits or is terminated by a signal
-                        wpid = waitpid(pid, &status, WUNTRACED);
+                        waitpid(pid, &status, WUNTRACED);
                 } while (!WIFEXITED(status) && !WIFSIGNALED(status));
         }
 
         return 1;
 }
 
+int find_pipe(char ** args){
+	int pipe_index = -1;
+	int i = 0;
+
+	while (args[i] != NULL){
+		if (strcmp(args[i], "|") == 0){
+			if (pipe_index != -1){
+				return -2;
+			}
+			pipe_index = i;
+		}
+		i++;
+	}
+
+	return pipe_index;
+}
+
+int start_pipe_process(char ** left_args, char ** right_args){
+	int fd[2];
+	int status;
+	pid_t left_pid, right_pid;
+
+	if (pipe(fd) < 0){
+		perror("msh");
+		return 1;
+	}
+
+	left_pid = fork();
+	if (left_pid == 0){
+		close(fd[0]);
+		if (dup2(fd[1], 1) < 0){
+			perror("msh");
+			exit(EXIT_FAILURE);
+		}
+		close(fd[1]);
+
+		if (execvp(left_args[0], left_args) == -1){
+			perror("msh");
+		}
+		exit(EXIT_FAILURE);
+	}
+	else if (left_pid < 0){
+		perror("msh");
+		close(fd[0]);
+		close(fd[1]);
+		return 1;
+	}
+
+	right_pid = fork();
+	if (right_pid == 0){
+		close(fd[1]);
+		if (dup2(fd[0], 0) < 0){
+			perror("msh");
+			exit(EXIT_FAILURE);
+		}
+		close(fd[0]);
+
+		if (execvp(right_args[0], right_args) == -1){
+			perror("msh");
+		}
+		exit(EXIT_FAILURE);
+	}
+	else if (right_pid < 0){
+		perror("msh");
+		close(fd[0]);
+		close(fd[1]);
+		waitpid(left_pid, &status, WUNTRACED);
+		return 1;
+	}
+
+	close(fd[0]);
+	close(fd[1]);
+	waitpid(left_pid, &status, WUNTRACED);
+	waitpid(right_pid, &status, WUNTRACED);
+
+	return 1;
+}
+
 int shell_execute(char ** args){
 
 	if (args[0] == NULL){	// Empty command
 		return 1;
+	}
+
+	int pipe_index = find_pipe(args);
+	if (pipe_index == -2){
+		fprintf(stderr, "msh: only one pipe is supported\n");
+		return 1;
+	}
+	else if (pipe_index > -1){
+		if (pipe_index == 0 || args[pipe_index + 1] == NULL){
+			fprintf(stderr, "msh: invalid pipe command\n");
+			return 1;
+		}
+		args[pipe_index] = NULL;
+		return start_pipe_process(args, &args[pipe_index + 1]);
 	}
 
 	// Copy the current Standard Input and Output file descriptors
@@ -356,6 +452,8 @@ void shell_loop(void){
 }
 
 int main(int argc, char ** argv){
+	(void)argc;
+	(void)argv;
 	getcwd(PWD, sizeof(PWD));
 	strcpy(PATH, PWD);
 	strcat(PATH, "/cmds/");
