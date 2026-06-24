@@ -1,9 +1,11 @@
 /*******************************************************************
- *           File:  miniShell.c
- *         Author:  Ashwitha Yadav T
- *   Date Started:  September 22, 2017
- *    Description:  A simple implementation of the Unix Shell in the
- *                      C Programming language.
+ * File: miniShell.c
+ * Author: Tanika Goyal
+ * Project: MiniShell
+ * Description:
+ * A Unix-like shell implemented in C using POSIX system calls.
+ * Supports built-in commands, process creation, command execution,
+ * and I/O redirection.
  *******************************************************************/
 
 #include <stdio.h>	// For: printf(), fprintf(), getchar(), perror(), stderr
@@ -42,7 +44,7 @@ int shell_cd(char ** args){
 		fprintf(stderr, "minsh: one argument required\n");
 	}
 	else if (chdir(args[1]) < 0){
-		perror("minsh");
+		perror("msh");
 	}
 	getcwd(PWD, sizeof(PWD));	// Update present working directory
 	return 1;
@@ -67,7 +69,7 @@ int shell_exit(char ** args){
  * return: status 1 to indicate successful termination
  */
 int shell_help(char ** args){
-	printf("\nA mini implementation of the Unix Shell by Ashwitha Yadav T.\n");
+	printf("\nMiniShell - A Unix-like shell written in C.\n");
 	printf("\nCommands implemented: ");
 	printf("\n\t- help");
 	printf("\n\t- exit");
@@ -121,6 +123,7 @@ int shell_echo(char ** args){
 		i++;
 	}
 	printf("\n");
+	return 1;
 }
 
 /*
@@ -218,7 +221,7 @@ int start_process(char ** args){
 		exit(EXIT_FAILURE);	// To exit from child process
         }
         else if (pid < 0){      // Error in forking
-		perror("minsh");
+		perror("msh");
         }
         else{           // It's the parent process
                 do{
@@ -258,12 +261,12 @@ int shell_execute(char ** args){
 		if ( strcmp( args[i], "<" ) == 0 ){	// Input redirection
 			int inp = open( args[i+1], O_RDONLY );
 			if ( inp < 0 ){
-				perror("minsh");
+				perror("msh");
 				return 1;
 			}
 
 			if ( dup2(inp, 0) < 0 ){
-				perror("minsh");
+				perror("msh");
 				return 1;
 			}
 			close(inp);
@@ -275,12 +278,12 @@ int shell_execute(char ** args){
 			int inp = open( args[i+1], O_RDONLY );
 			if ( inp < 0 ){
 
-				perror("minsh");
+				perror("msh");
 				return 1;
 			}
 
 			if ( dup2(inp, 0) < 0 ){
-				perror("minsh");
+				perror("msh");
 				return 1;
 			}
 			close(inp);
@@ -292,12 +295,12 @@ int shell_execute(char ** args){
 
 			int out = open( args[i+1], O_WRONLY | O_TRUNC | O_CREAT, 0755 );
 			if ( out < 0 ){
-				perror("minsh");
+				perror("msh");
 				return 1;
 			}
 
 			if ( dup2(out, 1) < 0 ){
-				perror("minsh");
+				perror("msh");
 				return 1;
 			}
 			close(out);
@@ -308,12 +311,12 @@ int shell_execute(char ** args){
 		else if( strcmp( args[i], ">>") == 0 ){	// Output redirection (append)
 			int out = open( args[i+1], O_WRONLY | O_APPEND | O_CREAT, 0755 );
 			if ( out < 0 ){
-				perror("minsh");
+				perror("msh");
 				return 1;
 			}
 
 			if ( dup2(out, 1) < 0 ){
-				perror("minsh");
+				perror("msh");
 				return 1;
 
 			}
@@ -325,12 +328,12 @@ int shell_execute(char ** args){
 		else if( strcmp( args[i], "2>") == 0 ){	// Error redirection
 			int err = open( args[i+1], O_WRONLY | O_CREAT, 0755 );
 			if ( err < 0 ){
-				perror("minsh");
+				perror("msh");
 				return 1;
 			}
 
 			if ( dup2(err, 2) < 0 ){
-				perror("minsh");
+				perror("msh");
 				return 1;
 			}
 			close(err);
@@ -342,12 +345,12 @@ int shell_execute(char ** args){
 			int err = open( args[i+1], O_WRONLY | O_CREAT | O_APPEND, 0755 );
 
 			if ( err < 0 ){
-				perror("minsh");
+				perror("msh");
 				return 1;
 			}
 
 			if ( dup2(err, 2) < 0 ){
-				perror("minsh");
+				perror("msh");
 				return 1;
 			}
 			close(err);
@@ -389,7 +392,7 @@ int shell_execute(char ** args){
 /*
  * Function:  shell_loop
  * ---------------------
- *  main loop of the Mini-Shell
+ *  main loop of the shell
  */
 void shell_loop(void){
 
