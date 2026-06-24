@@ -1,50 +1,75 @@
-# Mini-Shell
+# MiniShell
 
-<p align="center">
-  <img width="400" height="150" src="/logo2.png">
-</p>
+## Project Overview
 
-## Brief Description
-A simple implementation of the Unix Shell in the C Programming language. This project was coded and tested in Ubuntu 17.04.
+MiniShell is a Unix-like shell implemented in C using POSIX system calls. It supports a small set of built-in commands, executes real system commands, handles basic I/O redirection, and maintains command history for the current session.
 
-## How to run
-1. To test this project, download all the files and folders into a directory. 
-2. Compile and run `miniShell.c`
-3. The minsh (MINi SHell) is now yours to try!
+The project is designed to demonstrate core operating system concepts through a compact, readable shell implementation. It was developed and tested on macOS/Linux.
 
-## Detailed Description
-### Implementation Details
-minsh has both built-in and external commands. The built-in commands are implemented in `miniShell.c`. The external commands are implemented in `.c` files with the name of the command in the cmds directory (for eg: `ls` is implemented in `cmds/ls.c` ). 
+## Features
 
-When you type a command into minsh, it first looks for the command in the list of built-ins that it maintains. 
- * If present, it will call the corresponding function (the mapping from built-in command name to the command function is implemented using **function pointers** for better performance and to eliminate the need for cumbersome switch case statements). 
- * If not, it will fork a new process, load the command's image into the child process and wait for the child process to finish execution before displaying the prompt again.
- * If the command is not found (the corresponding `.c` file is not found), an error message indicating that the command was not found will be displayed.
-  
-  When errors occur, appropriate error messages will be displayed.
-  
-  ### Commands
-  Only a very small number of commands have been implemented. The commands are:
-  * `cd`
-  * `help`
-  * `exit`
-  * `pwd`
-  * `echo`
-  * `clear`
-  * `ls`
-  * `cp`
-  * `mv`
-  * `rm`
-  * `mkdir`
-  * `rmdir`
-  * `ln`
-  * `cat`
+- Built-in commands: `cd`, `pwd`, `echo`, `help`, `exit`, and `history`
+- External command execution using the system `PATH`
+- Session-only command history
+- Input redirection with `<`
+- Output redirection with `>` and `>>`
+- Error redirection with `2>` and `2>>`
+- Makefile-based build process
 
-### Other Features
-  * Input, Output and Error Redirection (`<`, `<<`, `>`, `>>`, `2>`, `2>>` respectively)
+## OS Concepts Used
 
-### Possible Improvements
-  * Pipes
-  * More commands
-  * Shell Variables
+- Process creation with `fork()`
+- Program execution with `execvp()`
+- Parent process synchronization with `waitpid()`
+- File descriptor duplication with `dup2()`
+- Standard input, output, and error redirection
+- Basic command parsing and built-in dispatch
 
+## Build and Run
+
+Build the shell:
+
+```sh
+make
+```
+
+Run MiniShell:
+
+```sh
+./minishell
+```
+
+Remove build artifacts:
+
+```sh
+make clean
+```
+
+## Example Commands
+
+```sh
+pwd
+echo hello world
+cd ..
+ls
+ls > output.txt
+cat < input.txt
+ls missing-file 2> error.txt
+history
+exit
+```
+
+## Current Limitations
+
+- Command history is stored only for the current session.
+- Pipes are not supported.
+- Background jobs are not supported.
+- Advanced shell features such as `!!`, `!n`, aliases, and shell variables are not supported.
+- Quoted string parsing is limited.
+
+## Future Improvements
+
+- Add pipe support between commands.
+- Improve command parsing for quoted strings and escaped characters.
+- Add optional persistent history.
+- Add support for background processes.
